@@ -35,6 +35,7 @@ SOFTWARE.
 #include "i2c.h"
 #include "ads1100.h"
 #include "sht21.h"
+#include "datastore.h"
 
 
 /* Private typedef */
@@ -58,45 +59,44 @@ volatile uint16_t printmode  = 0;
 
 int main(void)
 {
-
-
+	SysTick_Config (SystemCoreClock / 1000);
 	uart_init();
 	gpio_init();
 	int_init();
 	initI2C1();
-	ADS1100_ContConvInit();
-	SHT21_res();
 
 	char buff[10];
 	uint16_t i;
   while (1)
   {
-  		if (!gettxfull())
-  			{
-					if (printmode)
-						{
-							sprintf(buff, "%f4", ((float)adc_conv_val)/(1241.21));
-							buff[4] = 'V';
-							buff[5] = ' ';
-							buff[6] = ' ';
-							buff[7] = '\n';
-							buff[8] = '\r';
-							buff[9] = 0;
-						}
-					else
-						sprintf(buff, "%d\n\r", adc_conv_val);
-					for (i = 0; i < 10; i++)
-						{
-							if (buff[i] == 0)
-								break;
-							puttxbuff(buff[i]);
-						}
-				}
-  		if (getrxfull())
-				{
-					if (getrxbuff() == 'm')
-						printmode = !printmode;
-				}
+		datastore_proc();
+		if (!gettxfull())
+			{
+				if (printmode)
+					{
+						sprintf(buff, "%f4", ((float)adc_conv_val)/(1241.21));
+						buff[4] = 'V';
+						buff[5] = ' ';
+						buff[6] = ' ';
+						buff[7] = '\n';
+						buff[8] = '\r';
+						buff[9] = 0;
+					}
+				else
+					sprintf(buff, "%d\n\r", adc_conv_val);
+				for (i = 0; i < 10; i++)
+					{
+						if (buff[i] == 0)
+							break;
+						puttxbuff(buff[i]);
+					}
+				datastore_storedata();
+			}
+		if (getrxfull())
+			{
+				if (getrxbuff() == 'm')
+					printmode = !printmode;
+			}
   }
   return 0;
 }

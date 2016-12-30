@@ -261,8 +261,9 @@ Status I2C_Master_BufferRead(unsigned char* pBuffer,  unsigned long NumByteToRea
     /* Wait until ADDR is set: EV6 */
     while ((I2C1->SR1 &0x0002) != 0x0002)
     {
-        if (Timeout-- == 0)
+        if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
         {
+        		I2C1->SR1 &= ~I2C_SR1_AF;
             I2C1->CR1 |= CR1_STOP_Set;
             /* Make sure that the STOP bit is cleared by Hardware */
             while ((I2C1->CR1&0x200) == 0x200);
@@ -303,10 +304,9 @@ Status I2C_Master_BufferRead(unsigned char* pBuffer,  unsigned long NumByteToRea
         Timeout = I2C_TIMEOUT;
         while ((I2C1->SR1&0x0002) != 0x0002)
         {
-            if (Timeout-- == 0)
+            if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
             {
-                /* EV8_2: Wait until BTF is set before programming the STOP */
-                while ((I2C1->SR1 & 0x00004) != 0x000004);
+            		I2C1->SR1 &= ~I2C_SR1_AF;
                 /* Send STOP condition */
                 I2C1->CR1 |= CR1_STOP_Set;
                 /* Make sure that the STOP bit is cleared by Hardware */
@@ -359,8 +359,9 @@ Status I2C_Master_BufferRead(unsigned char* pBuffer,  unsigned long NumByteToRea
         /* Wait until ADDR is set: EV6 */
         while ((I2C1->SR1&0x0002) != 0x0002)
         {
-            if (Timeout-- == 0)
+            if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
             {
+            		I2C1->SR1 &= ~I2C_SR1_AF;
                 I2C1->CR1 |= CR1_STOP_Set;
                 /* Make sure that the STOP bit is cleared by Hardware */
                 while ((I2C1->CR1&0x200) == 0x200);
@@ -422,8 +423,9 @@ Status I2C_Master_BufferRead(unsigned char* pBuffer,  unsigned long NumByteToRea
         /* Wait until ADDR is set: EV6 */
         while ((I2C1->SR1&0x0002) != 0x0002)
         {
-            if (Timeout-- == 0)
+            if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
             {
+            		I2C1->SR1 &= ~I2C_SR1_AF;
                 I2C1->CR1 |= CR1_STOP_Set;
                 /* Make sure that the STOP bit is cleared by Hardware */
                 while ((I2C1->CR1&0x200) == 0x200);
@@ -492,7 +494,7 @@ Status I2C_Master_BufferRead(unsigned char* pBuffer,  unsigned long NumByteToRea
     Timeout = I2C_TIMEOUT;
 
     /* While the bus is busy */
-    while ((I2C1->SR2 & 0x00002) != 0x000002)
+    while ((I2C1->SR2 & 0x00002))
     {
         if (Timeout-- == 0)
             return BusyTimeoutError;
@@ -539,10 +541,9 @@ Status I2C_Master_BufferReadWithoutRegisterAddress(unsigned char* pBuffer,  unsi
         Timeout = I2C_TIMEOUT;
         while ((I2C1->SR1&0x0002) != 0x0002)
         {
-            if (Timeout-- == 0)
+            if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
             {
-                /* EV8_2: Wait until BTF is set before programming the STOP */
-                while ((I2C1->SR1 & 0x00004) != 0x000004);
+            		I2C1->SR1 &= ~I2C_SR1_AF;
                 /* Send STOP condition */
                 I2C1->CR1 |= CR1_STOP_Set;
                 /* Make sure that the STOP bit is cleared by Hardware */
@@ -595,8 +596,9 @@ Status I2C_Master_BufferReadWithoutRegisterAddress(unsigned char* pBuffer,  unsi
         /* Wait until ADDR is set: EV6 */
         while ((I2C1->SR1&0x0002) != 0x0002)
         {
-            if (Timeout-- == 0)
+            if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
             {
+            		I2C1->SR1 &= ~I2C_SR1_AF;
                 I2C1->CR1 |= CR1_STOP_Set;
                 /* Make sure that the STOP bit is cleared by Hardware */
                 while ((I2C1->CR1&0x200) == 0x200);
@@ -658,8 +660,9 @@ Status I2C_Master_BufferReadWithoutRegisterAddress(unsigned char* pBuffer,  unsi
         /* Wait until ADDR is set: EV6 */
         while ((I2C1->SR1&0x0002) != 0x0002)
         {
-            if (Timeout-- == 0)
+            if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
             {
+            		I2C1->SR1 &= ~I2C_SR1_AF;
                 I2C1->CR1 |= CR1_STOP_Set;
                 /* Make sure that the STOP bit is cleared by Hardware */
                 while ((I2C1->CR1&0x200) == 0x200);
@@ -768,8 +771,9 @@ Status I2C_Master_BufferWrite(unsigned char* pBuffer,  unsigned long NumByteToWr
      //Wait until ADDR is set: EV6
     while ((I2C1->SR1 &0x0002) != 0x0002)
     {
-        if (Timeout-- == 0)
+        if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
         {
+        		I2C1->SR1 &= ~I2C_SR1_AF;
             I2C1->CR1 |= CR1_STOP_Set;
              //Make sure that the STOP bit is cleared by Hardware
             while ((I2C1->CR1&0x200) == 0x200);
@@ -820,7 +824,7 @@ Status I2C_Master_BufferWrite(unsigned char* pBuffer,  unsigned long NumByteToWr
 
      //While the bus is busy
     Timeout = I2C_TIMEOUT;
-    while ((I2C1->SR2 & 0x00002) != 0x000002)
+    while ((I2C1->SR2 & 0x00002))
     {
         if (Timeout-- == 0)
             return BusyTimeoutError;
@@ -858,8 +862,9 @@ Status I2C_Master_BufferWriteWithoutRegisterAddress(unsigned char* pBuffer,  uns
      //Wait until ADDR is set: EV6
     while ((I2C1->SR1 &0x0002) != 0x0002)
     {
-        if (Timeout-- == 0)
+        if ((Timeout-- == 0) || (I2C1->SR1 & I2C_SR1_AF))
         {
+        		I2C1->SR1 &= ~I2C_SR1_AF;
             I2C1->CR1 |= CR1_STOP_Set;
              //Make sure that the STOP bit is cleared by Hardware
             while ((I2C1->CR1&0x200) == 0x200);
@@ -906,7 +911,7 @@ Status I2C_Master_BufferWriteWithoutRegisterAddress(unsigned char* pBuffer,  uns
 
      //While the bus is busy
     Timeout = I2C_TIMEOUT;
-    while ((I2C1->SR2 & 0x00002) != 0x000002)
+    while ((I2C1->SR2 & 0x00002))
     {
         if (Timeout-- == 0)
             return BusyTimeoutError;

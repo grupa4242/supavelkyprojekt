@@ -5,8 +5,8 @@
  *      Author: Lenka
  */
 
-
 #include "ringbuffer.h"
+#include "stm32l1xx.h"
 
 #define TXCNTMSK (TXBUFFLEN - 1)
 

@@ -18,6 +18,10 @@ void puttxbuff(char c);
 uint16_t gettxfull();
 uint16_t gettxfree();
 
+char getrxbuff();
+void putrxbuff(const char c);
 
+uint16_t getrxfull();
+uint16_t getrxfree();
 
 #endif /* RINGBUFFER_H_ */

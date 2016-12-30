@@ -31,7 +31,7 @@
 
 Status ADS1100_ContConvInit()
 {
-	unsigned char data = CFGREG | SC;
+	unsigned char data = CFGREG;
 	Status error = I2C_Master_BufferWriteWithoutRegisterAddress(&data, 1, ADS1100_ADDRESS(0));
 
 	return error;
@@ -39,7 +39,7 @@ Status ADS1100_ContConvInit()
 
 Status ADS1100_StartConv()
 {
-	unsigned char data = CFGREG | STBSY;
+	unsigned char data = CFGREG | STBSY | SC;
 	Status error = I2C_Master_BufferWriteWithoutRegisterAddress(&data, 1, ADS1100_ADDRESS(0));
 
 	return error;
@@ -63,7 +63,7 @@ Status ADS1100_readDataStatus(uint16_t * data, uint8_t * status)
 	Status error = I2C_Master_BufferReadWithoutRegisterAddress(buffer, 3, ADS1100_ADDRESS(0));
 
 	*data = (buffer[0]<<8) + buffer[1];
-	status = !(data[2] & STBSY);
+	*status = !(buffer[2] & STBSY);
 
 	return error;
 }

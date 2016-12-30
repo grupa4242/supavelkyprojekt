@@ -137,10 +137,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-	/*  TimingDelay_Decrement(); */
-#ifdef USE_STM32L_DISCOVERY
-  TimingDelay_Decrement();
-#endif
+
 }
 
 /******************************************************************************/
@@ -151,24 +148,10 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief  This function handles PPP interrupt request.
+  * @brief  This function handles USART1 interrupt request.
   * @param  None
   * @retval None
   */
-/*void PPP_IRQHandler(void)
-{
-}*/
-
-void ADC1_IRQHandler(void)
-{
-	if (ADC1 -> SR & ADC_SR_EOC)
-		{
-			adc_conv_val = ADC_GetConversionValue(ADC1);
-		}
-	else if (ADC1 -> SR & ADC_SR_OVR)
-		ADC1 -> SR &= ~ADC_SR_OVR;
-}
-
 void USART1_IRQHandler(void)
 {
 	if (USART1 -> SR & USART_SR_RXNE)
@@ -179,10 +162,7 @@ void USART1_IRQHandler(void)
 			if (gettxfull() < 2)
 				USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
 			USART_SendData(USART1, gettxbuff());
-			//else
-				//USART1 -> SR &= ~USART_SR_TC;
 		}
-
 }
 
 /**

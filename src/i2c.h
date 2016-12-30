@@ -24,7 +24,7 @@
 #define I2C1_CONTROL_PINS_PORT_CLK      RCC_AHBPeriph_GPIOB
 #define I2C1_CONTROL_PINS_PORT			GPIOB
 
-#define I2C_TIMEOUT 10000
+#define I2C_TIMEOUT 100
 
 /* I2C SPE mask */
 #define CR1_PE_Set              ((uint16_t)0x0001)
