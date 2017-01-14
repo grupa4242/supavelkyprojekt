@@ -30,7 +30,6 @@ SOFTWARE.
 #include <stddef.h>
 #include <stdio.h>
 #include "stm32l1xx.h"
-#include "vrs_cv5.h"
 #include "ringbuffer.h"
 #include "i2c.h"
 #include "ads1100.h"
@@ -41,7 +40,11 @@ SOFTWARE.
 /* Private typedef */
 /* Private define  */
 /* Private macro */
+
 /* Private variables */
+uint16_t adc_conv_val = 0;
+uint16_t printmode  = 0;
+
 /* Private function prototypes */
 /* Private functions */
 
@@ -54,8 +57,6 @@ SOFTWARE.
 **===========================================================================
 */
 
-uint16_t adc_conv_val = 0;
-volatile uint16_t printmode  = 0;
 
 int main(void)
 {
@@ -64,6 +65,7 @@ int main(void)
 	gpio_init();
 	int_init();
 	initI2C1();
+	rtc_init();
 
 	char buff[10];
 	uint16_t i;

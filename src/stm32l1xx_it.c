@@ -23,7 +23,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l1xx_it.h"
-#include "vrs_cv5.h"
 #include "ringbuffer.h"
 /* #include "main.h" */
 
@@ -137,7 +136,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-
+	++SysUpTime;
 }
 
 /******************************************************************************/
