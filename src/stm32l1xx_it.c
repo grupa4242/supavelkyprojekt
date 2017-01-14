@@ -22,6 +22,7 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/
+#include "coreit.h"
 #include "stm32l1xx_it.h"
 #include "ringbuffer.h"
 /* #include "main.h" */

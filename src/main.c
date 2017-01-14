@@ -27,6 +27,7 @@ SOFTWARE.
 */
 
 /* Includes */
+#include "core.h"
 #include <stddef.h>
 #include <stdio.h>
 #include "stm32l1xx.h"
