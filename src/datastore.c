@@ -8,16 +8,8 @@
 #include "datastore.h"
 #include "ads1100.h"
 #include "sht21.h"
-
-
-typedef struct
-{
-	uint32_t timestamp;
-	uint32_t timestampdate;
-	uint16_t temp;
-	uint16_t humidity;
-	uint16_t pressure;
-} datasample;
+#include "stm32l1xx.h"
+#include "core.h"
 
 typedef enum
 {
@@ -40,15 +32,23 @@ static datasample datalog[DATASTORELEN];
 
 static ADS1100_state_t ads_state = ADSIdle;
 static SHT21_state_t sht_state = SHTIdle;
+static uint32_t writeptr = 0;
+static uint32_t readptr = 0;
 
 void datastore_proc()
 {
-	uint16_t tmp;
 	uint8_t tmpstat;
 
 	static uint16_t temperature;
 	static uint16_t relhumiditiy;
-	static uint16_t pressure;
+	static int16_t pressure;
+
+	static uint32_t lastrun = 0;
+
+	if ((millis() - lastrun) < SCANINTERVAL)
+		return;
+
+	lastrun += SCANINTERVAL;
 
 	switch(ads_state)
 	{
@@ -60,10 +60,9 @@ void datastore_proc()
 			ads_state = ADSWaitForMeas;
 			break;
 		case ADSWaitForMeas:
-			ADS1100_readDataStatus(&tmp, &tmpstat);
+			ADS1100_readDataStatus(&pressure, &tmpstat);
 			if (tmpstat)
 				{
-					pressure = tmp;
 					ads_state = ADSDone;
 				}
 			break;
@@ -81,19 +80,17 @@ void datastore_proc()
 			sht_state = SHTMeasT;
 			break;
 		case SHTMeasT:
-			SHT21_readVal(&tmp,&tmpstat);
+			SHT21_readVal(&temperature,&tmpstat);
 			if (tmpstat)
 				{
-					temperature = tmp;
 					SHT21_trigMeasRH();
 					sht_state = SHTMeasRH;
 				}
 			break;
 		case SHTMeasRH:
-			SHT21_readVal(&tmp,&tmpstat);
+			SHT21_readVal(&relhumiditiy,&tmpstat);
 			if (tmpstat)
 				{
-					relhumiditiy = tmp;
 					sht_state = SHTDone;
 				}
 			break;
@@ -107,7 +104,23 @@ void datastore_proc()
 			sht_state = SHTIdle;
 			ads_state = ADSIdle;
 
+			datasample * tmpdatalog = datalog + writeptr;
 
+			tmpdatalog->humidity = relhumiditiy;
+			tmpdatalog->pressure = pressure;
+			tmpdatalog->temp = temperature;
+
+			RTC_GetTime(RTC_Format_BIN, &(tmpdatalog->time));
+			RTC_GetDate(RTC_Format_BIN, &(tmpdatalog->date));
+
+			writeptr++;
+			writeptr &= (DATASTORELEN - 1);
+
+			if (readptr == writeptr)
+				{
+					readptr++;
+					readptr &= (DATASTORELEN - 1);
+				}
 		}
 }
 
@@ -120,4 +133,36 @@ void datastore_storedata()
 
 	ads_state = ADSMeasTrig;
 	sht_state = SHTMeasTrig;
+}
+
+uint32_t storeddatanum()
+{
+	return (writeptr - readptr) & (DATASTORELEN - 1);
+}
+
+uint8_t storeddataload(datasample * ptr)
+{
+	if (writeptr == readptr)
+		return 0;
+	*ptr = datalof[readptr];
+	readptr++;
+	readptr &= (DATASTORELEN - 1);
+	return 1;
+}
+
+#define K (3 * (1L << 16) / 3.3)
+
+inline float rawtopressure(uint16_t raw)
+{
+	return (raw + 0.095 * K) / (0.009 * K);
+}
+
+inline float rawtotemp(uint16_t raw)
+{
+	return SHT21_CalcTemperatureC(raw);
+}
+
+inline float rawtorh(uint16_t raw)
+{
+	return SHT21_CalcRH(raw);
 }
