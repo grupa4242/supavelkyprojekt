@@ -45,7 +45,7 @@ Status ADS1100_StartConv()
 	return error;
 }
 
-Status ADS1100_readData(uint16_t *data)
+Status ADS1100_readData(int16_t *data)
 {
 	unsigned char buffer[2];
 
@@ -56,7 +56,7 @@ Status ADS1100_readData(uint16_t *data)
 	return error;
 }
 
-Status ADS1100_readDataStatus(uint16_t * data, uint8_t * status)
+Status ADS1100_readDataStatus(int16_t * data, uint8_t * status)
 {
 	unsigned char buffer[3];
 

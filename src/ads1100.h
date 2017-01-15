@@ -13,7 +13,7 @@
 
 Status ADS1100_ContConvInit();
 Status ADS1100_StartConv();
-Status ADS1100_readData(uint16_t *data);
-Status ADS1100_readDataStatus(uint16_t * data, uint8_t * status);
+Status ADS1100_readData(int16_t *data);
+Status ADS1100_readDataStatus(int16_t * data, uint8_t * status);
 
 #endif
