@@ -83,3 +83,32 @@ uint16_t getrxfree()
 {
 	return ((rxrp - rxwp) & RXCNTMSK) - 1;
 }
+
+void buffwrite(const uint8_t * buff, uint8_t len)
+{
+	uint8_t i = 0;
+	while (i < len)
+		{
+			if (gettxfree())
+				{
+					puttxbuff(buff[i]);
+					i++;
+				}
+		}
+}
+
+uint8_t buffread(uint8_t * buff, uint8_t len)
+{
+	uint8_t i = 0;
+	while (i < len)
+		{
+			if (getrxfull())
+				{
+					buff[i] = getrxbuff();
+					i++;
+				}
+			else
+				break;
+		}
+	return i;
+}

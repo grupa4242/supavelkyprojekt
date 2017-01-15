@@ -24,4 +24,7 @@ void putrxbuff(const char c);
 uint16_t getrxfull();
 uint16_t getrxfree();
 
+void buffwrite(const uint8_t * buff, uint8_t len);
+uint8_t buffread(uint8_t * buff, uint8_t len);
+
 #endif /* RINGBUFFER_H_ */
