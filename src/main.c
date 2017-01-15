@@ -68,37 +68,12 @@ int main(void)
 	initI2C1();
 	rtc_init();
 
-	char buff[10];
-	uint16_t i;
   while (1)
   {
-		datastore_proc();
-		if (!gettxfull())
+		if (RTC_GetFlagStatus (RTC_FLAG_WUTF))
 			{
-				if (printmode)
-					{
-						sprintf(buff, "%f4", ((float)adc_conv_val)/(1241.21));
-						buff[4] = 'V';
-						buff[5] = ' ';
-						buff[6] = ' ';
-						buff[7] = '\n';
-						buff[8] = '\r';
-						buff[9] = 0;
-					}
-				else
-					sprintf(buff, "%d\n\r", adc_conv_val);
-				for (i = 0; i < 10; i++)
-					{
-						if (buff[i] == 0)
-							break;
-						puttxbuff(buff[i]);
-					}
-				datastore_storedata();
-			}
-		if (getrxfull())
-			{
-				if (getrxbuff() == 'm')
-					printmode = !printmode;
+				RTC_ClearFlag (RTC_FLAG_WUTF);
+				datastore_proc ();
 			}
   }
   return 0;
