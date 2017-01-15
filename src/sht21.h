@@ -20,4 +20,8 @@ Status SHT21_readVal(uint16_t *val, uint8_t * status);
 Status SHT21_userRegWrite(uint8_t *val);
 Status SHT21_userRegRead(uint8_t *val);
 
+float SHT21_CalcRH(uint16_t u16sRH);
+float SHT21_CalcTemperatureC(uint16_t u16sT);
+
+
 #endif /* SHT21_H_ */

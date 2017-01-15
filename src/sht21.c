@@ -78,9 +78,9 @@ Status SHT21_readVal(uint16_t *val, uint8_t * status)
 Status SHT21_userRegWrite(uint8_t *val)
 {
 	unsigned char data;
-	Status error = I2C_Master_BufferRead(val, 1, ADDRESS, USERREGR);
+	Status error = I2C_Master_BufferRead(&data, 1, ADDRESS, USERREGR);
 	data ^= data ^ (*val & 0xC7);
-	error = I2C_Master_BufferWrite(val, 1, ADDRESS, USERREGW);
+	error = I2C_Master_BufferWrite(&data, 1, ADDRESS, USERREGW);
 	return error;
 }
 
@@ -90,3 +90,39 @@ Status SHT21_userRegRead(uint8_t *val)
 	return error;
 }
 
+float SHT21_CalcRH(uint16_t u16sRH)
+//==============================================================================
+{
+	float humidityRH; // variable for result
+	u16sRH &= ~0x0003; // clear bits [1..0] (status bits)
+	//-- calculate relative humidity [%RH] --
+	humidityRH = -6.0 + 125.0/65536 * (float)u16sRH; // RH= -6 + 125 * SRH/2^16
+	return humidityRH;
+}
+
+float SHT21_CalcTemperatureC(uint16_t u16sT)
+//==============================================================================
+{
+	float temperatureC; // variable for result
+	u16sT &= ~0x0003; // clear bits [1..0] (status bits)
+	//-- calculate temperature [°C] --
+	temperatureC= -46.85 + 175.72/65536 *(float)u16sT; //T= -46.85 + 175.72 * ST/2^16
+	return temperatureC;
+}
+
+uint8_t SHT21_CheckCrc(uint8_t data[], uint8_t nbrOfBytes, uint8_t checksum)
+//==============================================================================
+{
+	uint8_t crc = 0;
+	uint8_t byteCtr;
+	//calculates 8-Bit checksum with given polynomial
+	for (byteCtr = 0; byteCtr < nbrOfBytes; ++byteCtr)
+		{ crc ^= (data[byteCtr]);
+		for (uint8_t bit = 8; bit > 0; --bit)
+			{ if (crc & 0x80) crc = (crc << 1) ^ 0x131;
+			else crc = (crc << 1);
+			}
+		}
+	if (crc != checksum) return 1;
+	else return 0;
+}
