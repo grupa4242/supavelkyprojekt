@@ -5,7 +5,7 @@
 
 volatile uint32_t SysUpTime = 0;
 
-uint32_t milis()
+uint32_t millis()
 {
 	return SysUpTime;
 }
@@ -92,6 +92,7 @@ void rtc_init()
 	RTC_WakeUpCmd(DISABLE);
 	RTC_WakeUpClockConfig(RTC_WakeUpClock_CK_SPRE_16bits);
 	RTC_SetWakeUpCounter(5*60);
+	RTC_WakeUpCmd(ENABLE);
 
 	if (RTC_GetFlagStatus(RTC_FLAG_INITS))
 		{
