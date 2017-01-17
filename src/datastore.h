@@ -11,16 +11,6 @@
 #include <stdint.h>
 #include "stm32l1xx.h"
 
-void datastore_proc();
-void datastore_storedata();
-
-uint32_t storeddatanum();
-uint8_t storeddataload(datasample * ptr);
-
-inline float rawtopressure(uint16_t raw);
-inline float rawtotemp(uint16_t raw);
-inline float rawtorh(uint16_t raw);
-
 typedef struct
 {
 	RTC_TimeTypeDef time;
@@ -29,6 +19,18 @@ typedef struct
 	uint16_t humidity;
 	int16_t pressure;
 } datasample;
+
+void datastore_proc();
+void datastore_collectdata();
+
+uint32_t storeddatanum();
+uint8_t storeddataload(datasample * ptr);
+void storeddataloadsuccess();
+void storeddataloadfail();
+
+float rawtopressure(uint16_t raw);
+float rawtotemp(uint16_t raw);
+float rawtorh(uint16_t raw);
 
 #define DATASTORELEN (1<<10)
 #define SCANINTERVAL 10U

@@ -52,9 +52,10 @@ void uart_init()
 
 void rtc_init()
 {
-#define LSE_STARTUP_TIMEOUT (0x0200)
+#define LSE_STARTUP_TIMEOUT (1000)
 
-	__IO uint32_t StartUpCounter = 0, LSEStatus = 0;
+	__IO uint32_t LSEStatus = 0;
+	uint32_t LSE_start;
 	RTC_InitTypeDef rtc_conf;
 	RTC_StructInit(&rtc_conf);
 
@@ -63,12 +64,14 @@ void rtc_init()
 
 	if (!(RCC->CSR & RCC_CSR_RTCEN))
 		{
+			RCC_RTCResetCmd(ENABLE);
+			RCC_RTCResetCmd(DISABLE);
 			RCC_LSEConfig(RCC_LSE_ON);
+			LSE_start = millis();
 			do
 			  {
 			    LSEStatus = RCC->CSR & RCC_CSR_LSERDY;
-			    StartUpCounter++;
-			  } while((LSEStatus == 0) && (StartUpCounter != LSE_STARTUP_TIMEOUT));
+			  } while((LSEStatus == 0) && ((millis() - LSE_start) < LSE_STARTUP_TIMEOUT));
 
 			if (LSEStatus)
 				{
@@ -91,7 +94,7 @@ void rtc_init()
 
 	RTC_WakeUpCmd(DISABLE);
 	RTC_WakeUpClockConfig(RTC_WakeUpClock_CK_SPRE_16bits);
-	RTC_SetWakeUpCounter(5*60);
+	RTC_SetWakeUpCounter(COLLECTPERIOD);
 	RTC_WakeUpCmd(ENABLE);
 
 	if (RTC_GetFlagStatus(RTC_FLAG_INITS))

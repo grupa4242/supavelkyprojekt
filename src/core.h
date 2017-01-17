@@ -11,4 +11,6 @@ void rtc_init();
 
 uint32_t millis();
 
+#define COLLECTPERIOD (2 - 1) //[s]
+
 #endif //__VRS_CV5_H_

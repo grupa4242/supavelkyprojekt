@@ -34,6 +34,7 @@ static ADS1100_state_t ads_state = ADSIdle;
 static SHT21_state_t sht_state = SHTIdle;
 static uint32_t writeptr = 0;
 static uint32_t readptr = 0;
+static uint32_t readptrbkp = 0;
 
 void datastore_proc()
 {
@@ -121,10 +122,15 @@ void datastore_proc()
 					readptr++;
 					readptr &= (DATASTORELEN - 1);
 				}
+			if (readptr == writeptr)
+				{
+					readptrbkp++;
+					readptrbkp &= (DATASTORELEN - 1);
+				}
 		}
 }
 
-void datastore_storedata()
+void datastore_collectdata()
 {
 	if (ads_state != ADSIdle)
 		return;
@@ -144,25 +150,37 @@ uint8_t storeddataload(datasample * ptr)
 {
 	if (writeptr == readptr)
 		return 0;
-	*ptr = datalof[readptr];
+	*ptr = datalog[readptr];
 	readptr++;
 	readptr &= (DATASTORELEN - 1);
 	return 1;
 }
 
-#define K (3 * (1L << 16) / 3.3)
-
-inline float rawtopressure(uint16_t raw)
+void storeddataloadsuccess()
 {
-	return (raw + 0.095 * K) / (0.009 * K);
+	readptrbkp = readptr;
 }
 
-inline float rawtotemp(uint16_t raw)
+void storeddataloadfail()
+{
+	readptr = readptrbkp;
+}
+
+#define _K (3 * (1L << 15) / 3.3)
+
+float rawtopressure(uint16_t raw)
+{
+	return (raw + 0.095 * _K) / (0.009 * _K);
+}
+
+#undef _K
+
+float rawtotemp(uint16_t raw)
 {
 	return SHT21_CalcTemperatureC(raw);
 }
 
-inline float rawtorh(uint16_t raw)
+float rawtorh(uint16_t raw)
 {
 	return SHT21_CalcRH(raw);
 }
