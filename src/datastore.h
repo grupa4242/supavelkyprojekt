@@ -33,6 +33,6 @@ float rawtotemp(uint16_t raw);
 float rawtorh(uint16_t raw);
 
 #define DATASTORELEN (1<<10)
-#define SCANINTERVAL 10U
+#define SCANINTERVAL 20U
 
 #endif /* DATASTORE_H_ */

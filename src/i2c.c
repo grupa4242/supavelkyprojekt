@@ -2,6 +2,7 @@
 #include "stm32l1xx.h"
 #include "stm32l1xx_conf.h"
 #include "stm32l1xx_i2c.h"
+#include "core.h"
 
 unsigned short gI2C_Timeout;
 unsigned char gDataBuffer[16];
@@ -9,6 +10,7 @@ unsigned char gDataBuffer[16];
 void initI2C1(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
+	uint32_t prevtime;
 
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, ENABLE);
 
@@ -20,13 +22,26 @@ void initI2C1(void)
 
 	/*!< GPIO configuration */
 	/*!< Configure sEE_I2C pins: SCL */
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
 	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
 
-
 	GPIO_InitStructure.GPIO_Pin = I2C1_SCL_PIN | I2C1_SDA_PIN;
+	GPIO_Init(I2C1_CONTROL_PINS_PORT, &GPIO_InitStructure);
+
+	prevtime = millis();
+	I2C1_CONTROL_PINS_PORT->ODR |=I2C1_SCL_PIN | I2C1_SDA_PIN;
+	while((millis() - prevtime) < 16)
+		{
+			if (millis() & 1)
+				I2C1_CONTROL_PINS_PORT->ODR |=  I2C1_SCL_PIN;
+			else
+				I2C1_CONTROL_PINS_PORT->ODR &= ~I2C1_SCL_PIN;
+		}
+	I2C1_CONTROL_PINS_PORT->ODR &= ~(I2C1_SCL_PIN | I2C1_SDA_PIN);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	GPIO_Init(I2C1_CONTROL_PINS_PORT, &GPIO_InitStructure);
 
 	I2C1->CR1 |= I2C_CR1_SWRST;
@@ -46,7 +61,7 @@ void initI2C1(void)
 	/* Apply sEE_I2C configuration after enabling it */
 	I2C_Init(I2C1, &I2C_InitStructure);
 
-    I2C_Cmd(I2C1, ENABLE);
+	I2C_Cmd(I2C1, ENABLE);
 }
 
 Status writeByteI2C1(unsigned char deviceAddress, unsigned char registerAddress, unsigned char data)

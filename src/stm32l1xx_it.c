@@ -157,7 +157,7 @@ void USART1_IRQHandler(void)
 	if (USART1 -> SR & USART_SR_RXNE)
 		putrxbuff(USART_ReceiveData(USART1));
 
-	if (USART1 -> SR & USART_SR_TXE)
+	if ((USART1 -> SR & USART_SR_TXE) && (USART1 -> CR1 & USART_CR1_TXEIE))
 		{
 			if (gettxfull() < 2)
 				USART_ITConfig(USART1, USART_IT_TXE, DISABLE);
