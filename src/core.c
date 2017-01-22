@@ -1,6 +1,5 @@
 #include "core.h"
 #include <stddef.h>
-#include "stm32l1xx.h"
 #include "coreit.h"
 
 volatile uint32_t SysUpTime = 0;
@@ -15,7 +14,7 @@ void gpio_init()
 	GPIO_InitTypeDef conf;
 
 	RCC_AHBPeriphClockCmd (RCC_AHBPeriph_GPIOA, ENABLE);
-
+	RCC_AHBPeriphClockCmd (RCC_AHBPeriph_GPIOB, ENABLE);
 	conf.GPIO_Speed = GPIO_Speed_40MHz;
 	conf.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	conf.GPIO_OType = GPIO_OType_PP;
@@ -28,6 +27,10 @@ void gpio_init()
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource9,GPIO_AF_USART1);
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_USART1);
 
+	GPIOB->MODER &= ~(3<<(2*6));
+	GPIOB->OTYPER |= 1<<6;
+	GPIOB->ODR |= 1<<6;
+	GPIOB->MODER |= (1 << (2*6));
 }
 
 void uart_init()
@@ -97,17 +100,14 @@ void rtc_init()
 	RTC_SetWakeUpCounter(COLLECTPERIOD);
 	RTC_WakeUpCmd(ENABLE);
 
-	if (RTC_GetFlagStatus(RTC_FLAG_INITS))
-		{
-			//TODO: set time/date
-			RTC_TimeTypeDef time;
-			RTC_DateTypeDef date;
-			RTC_TimeStructInit(&time);
-			RTC_DateStructInit(&date);
-			RTC_SetTime(RTC_Format_BCD, &time);
-			RTC_SetDate(RTC_Format_BCD, &date);
-		}
+	PWR_RTCAccessCmd(DISABLE);
+}
 
+void rtc_settimedate(RTC_TimeTypeDef * time, RTC_DateTypeDef * date)
+{
+	PWR_RTCAccessCmd(ENABLE);
+	RTC_SetTime(RTC_Format_BIN, time);
+	RTC_SetDate(RTC_Format_BIN, date);
 	PWR_RTCAccessCmd(DISABLE);
 }
 

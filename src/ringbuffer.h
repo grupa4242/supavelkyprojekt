@@ -27,4 +27,6 @@ uint16_t getrxfree();
 uint8_t buffwrite(const uint8_t * buff, uint8_t len);
 uint8_t buffread(uint8_t * buff, uint8_t len);
 
+void flushrx();
+
 #endif /* RINGBUFFER_H_ */

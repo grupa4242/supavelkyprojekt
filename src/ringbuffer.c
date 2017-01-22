@@ -87,12 +87,26 @@ uint16_t getrxfree()
 uint8_t buffwrite(const uint8_t * buff, uint8_t len)
 {
 	uint8_t i = 0;
-	while (i < len)
+	if (len)
 		{
-			if (gettxfree())
+			while (i < len)
 				{
-					puttxbuff(buff[i]);
-					i++;
+					if (gettxfree())
+						{
+							puttxbuff(buff[i]);
+							i++;
+						}
+				}
+		}
+	else
+		{
+			while (buff[i])
+				{
+					if (gettxfree())
+						{
+							puttxbuff(buff[i]);
+							i++;
+						}
 				}
 		}
 	return i;
@@ -112,4 +126,10 @@ uint8_t buffread(uint8_t * buff, uint8_t len)
 				break;
 		}
 	return i;
+}
+
+
+void flushrx()
+{
+	rxwp = rxrp;
 }
