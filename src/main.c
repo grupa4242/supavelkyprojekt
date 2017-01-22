@@ -27,17 +27,19 @@ SOFTWARE.
 */
 
 /* Includes */
-#include "core.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include "stm32l1xx.h"
+
+#include "core.h"
 #include "ringbuffer.h"
 #include "i2c.h"
-#include "ads1100.h"
-#include "sht21.h"
+#include "datasender.h"
+
 #include "datastore.h"
-#include "jsonconstructor.h"
+
+#include "gsm.h"
 
 
 /* Private typedef */
@@ -63,18 +65,28 @@ uint16_t printmode  = 0;
 
 int main(void)
 {
-	SysTick_Config (SystemCoreClock / 1000);
+SysTick_Config (SystemCoreClock / 1000);
 	uart_init();
 	gpio_init();
 	int_init();
 	initI2C1();
 	rtc_init();
-	int a = sizeof(char);
+
+	if (!RTC_GetFlagStatus(RTC_FLAG_INITS))
+		{
+			gsm_poweron();
+			while(gsm_status() == gsm_status_busy)
+				{
+					gsm_proc();
+				}
+			gsm_poweroff();
+		}
 
   while (1)
   {
 		datastore_proc ();
-
+		gsm_proc();
+		datasender_proc();
 
 		if (RTC_GetFlagStatus (RTC_FLAG_WUTF))
 			{
@@ -83,25 +95,6 @@ int main(void)
 				PWR_RTCAccessCmd(DISABLE);
 
 				datastore_collectdata();
-			}
-		if (storeddatanum()>5)
-			{
-				char asdf[128];
-				datasample data;
-				uint16_t sentbytes = 0;
-				constructhead(asdf,10);
-				buffwrite(asdf,strlen(asdf));
-				sentbytes += strlen(asdf);
-				do{
-						storeddataload(&data);
-						constructentry(asdf,&data,storeddatanum());
-						buffwrite(asdf,strlen(asdf));
-						sentbytes += strlen(asdf);
-					}
-				while((storeddatanum()!=0)&&(sentbytes < 1000));
-				constructtail(asdf);
-				buffwrite(asdf,strlen(asdf));
-				storeddataloadsuccess();
 			}
   }
   return 0;
