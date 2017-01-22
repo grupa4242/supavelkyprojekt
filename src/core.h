@@ -14,6 +14,6 @@ uint32_t millis();
 
 void rtc_settimedate(RTC_TimeTypeDef * time, RTC_DateTypeDef * date);
 
-#define COLLECTPERIOD (2 - 1) //[s]
+#define COLLECTPERIOD (5*60 - 1) //[s]
 
 #endif //__VRS_CV5_H_

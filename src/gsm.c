@@ -301,6 +301,7 @@ void gsm_proc()
 					rxc = rx_none;
 					PWRKEYHI();
 					rxcnt = 0;
+					socketopen = 0;
 					settimer();
 				}
 			break;

@@ -10,7 +10,7 @@
 #include <string.h>
 #include "jsonconstructor.h"
 
-const char start[] = "{\"stationid\":%lu,\"vals\":[";
+const char start[] = "  {\"stationid\":%lu,\"vals\":[";
 const char end[] = "]}";
 const char entrystruct[] =
 		"{\"timestamp\":\"20%02d-%02d-%02d-%02d:%02d:%02d\","
