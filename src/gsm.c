@@ -470,6 +470,11 @@ void gsm_proc()
 			break;
 
 		case gsm_senddata1:
+			if (socketopen == 0)
+				{
+					gsm_state = gsm_sendfail;
+					break;
+				}
 			flushrx();
 			rxc = rx_none;
 			buffwrite(ssend, 0);
@@ -490,6 +495,10 @@ void gsm_proc()
 					puttxbuff(sendbuffer[txcnt]);
 					txcnt++;
 				}
+			else if (socketopen == 0)
+				{
+					gsm_state = gsm_sendfail;
+				}
 			break;
 		case gsm_senddata3:
 			if (rxc == rx_havers)
@@ -501,6 +510,10 @@ void gsm_proc()
 						}
 				}
 			else if (gettimer > 75000)
+				{
+					gsm_state = gsm_sendfail;
+				}
+			else if (socketopen == 0)
 				{
 					gsm_state = gsm_sendfail;
 				}
