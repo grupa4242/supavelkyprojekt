@@ -65,7 +65,7 @@ uint16_t printmode  = 0;
 
 int main(void)
 {
-SysTick_Config (SystemCoreClock / 1000);
+	SysTick_Config (SystemCoreClock / 1000);
 	uart_init();
 	gpio_init();
 	int_init();
