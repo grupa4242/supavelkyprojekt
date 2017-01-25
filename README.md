@@ -3,11 +3,11 @@
 ## used devices
 
 nucleo-l132re  
-gsm modle  
-analógovı tlakovı senzor MP3H6115A pripojenı na ADC prevodník  
-snímaè vlhkosti a teploty SHT21  
+gsm modul  
+analÃ³govÃ½ tlakovÃ½ senzor MP3H6115A pripojenÃ½ na ADC prevodnÃ­k  
+snÃ­maÄ vlhkosti a teploty SHT21  
 
 ## datasheets/product pages
-https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/Humidity_Sensors/Sensirion_Humidity_Sensors_SHT21_Datasheet_V4.pdf
-http://www.nxp.com/assets/documents/data/en/data-sheets/MP3H6115A.pdf
-http://www.ti.com/product/ADS1100
+https://www.sensirion.com/fileadmin/user_upload/customers/sensirion/Dokumente/Humidity_Sensors/Sensirion_Humidity_Sensors_SHT21_Datasheet_V4.pdf  
+http://www.nxp.com/assets/documents/data/en/data-sheets/MP3H6115A.pdf  
+http://www.ti.com/product/ADS1100  
